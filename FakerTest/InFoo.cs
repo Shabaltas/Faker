@@ -2,6 +2,6 @@
 {
     public class InFoo
     {
-        private Foo Foo;
+        public Foo Foo { get; set; }
     }
 }

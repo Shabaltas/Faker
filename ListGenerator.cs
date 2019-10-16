@@ -11,7 +11,7 @@ namespace Faker
             List<T> list = new List<T>();
             for (int i = 1; i < size; i++)
             {
-                list.Add((T) Faker.Create(typeof(T)));
+                list.Add(Faker.Create<T>());
             }
             return list;
         }
