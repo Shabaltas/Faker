@@ -30,7 +30,7 @@ namespace Faker
                 Type iInterface = type.GetInterface(typeof(IGenerator<>).Name);
                 if (type.IsAbstract || iInterface == null) continue;
                 Type key = iInterface.GetGenericArguments()[0];
-                Generators.Add(makeTypeFullName(key), type);
+                Generators.Add(MakeTypeFullName(key), type);
             }
         }
         public object Create(Type type)
@@ -41,6 +41,11 @@ namespace Faker
                 throw new ArgumentException("Type must not be abstract, interface or void");
             }
 
+            if (type.IsGenericType && type.GenericTypeArguments.Length == 0)
+            {
+                //return null
+                throw new ArgumentException("Generic type is undefined");
+            }
             if (!_currentDependencies.Add(type))
             {
                 //return null;
@@ -49,7 +54,7 @@ namespace Faker
             object currentObject;
             try
             {
-                currentObject = CreateWithGenerator(type, Generators[makeTypeFullName(type)]);
+                currentObject = CreateWithGenerator(type, Generators[MakeTypeFullName(type)]);
             }
             catch (KeyNotFoundException)
             {
@@ -78,7 +83,8 @@ namespace Faker
         private void FillObject(object o)
         {
             Type type = o.GetType();
-            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic
+                                                                      | BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
                 field.SetValue(o, Config.Generators.ContainsKey(field)
@@ -86,10 +92,10 @@ namespace Faker
                     : Create(field.FieldType));
             }
         }
-
+        
         private object CreateEnum(Type type)
         {
-            Type generatorType = Generators[makeTypeFullName(typeof(Enum))].MakeGenericType(type);
+            Type generatorType = Generators[MakeTypeFullName(typeof(Enum))].MakeGenericType(type);
             object generator = Activator.CreateInstance(generatorType);
             return generatorType.GetMethod("Generate").Invoke(generator, new object[0]);
         }
@@ -146,7 +152,7 @@ namespace Faker
                 parametersValues[i] = Create(parameters[i].ParameterType);
             }
             object currentObject = constructor.Invoke(parametersValues);
-            if (length == 0) FillObject(currentObject);
+            FillObject(currentObject);
             return currentObject;
         }
 
@@ -180,7 +186,7 @@ namespace Faker
                    && type1.Name.Equals(type2.Name);
         }
 
-        private string makeTypeFullName(Type type)
+        private string MakeTypeFullName(Type type)
         {
             return type.Assembly + "." + type.Name;
         }
