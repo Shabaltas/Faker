@@ -45,6 +45,7 @@
     <Compile Include="EnumerableGenerator.cs" />
     <Compile Include="EnumGenerator.cs" />
     <Compile Include="Faker.cs" />
+    <Compile Include="FakerConfig.cs" />
     <Compile Include="FloatGenerator.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="IGenerator.cs" />
