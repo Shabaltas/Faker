@@ -38,11 +38,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoolGenerator.cs" />
+    <Compile Include="ByteGenerator.cs" />
+    <Compile Include="CharGenerator.cs" />
+    <Compile Include="DoubleGenerator.cs" />
+    <Compile Include="EnumerableGenerator.cs" />
+    <Compile Include="EnumGenerator.cs" />
     <Compile Include="Faker.cs" />
+    <Compile Include="FloatGenerator.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="IGenerator.cs" />
     <Compile Include="IntGenerator.cs" />
+    <Compile Include="ListGenerator.cs" />
+    <Compile Include="LongGenerator.cs" />
+    <Compile Include="NumericGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShortGenerator.cs" />
     <Compile Include="StringGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

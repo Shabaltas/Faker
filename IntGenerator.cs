@@ -1,11 +1,13 @@
-﻿namespace Faker
+﻿using System;
+
+namespace Faker
 {
     //[Generator("int")]
-    public class IntGenerator: IGenerator<int>
+    public class IntGenerator: NumericGenerator<int>
     {
-        public int Generate()
+        public override int Generate()
         {
-            throw new System.NotImplementedException();
+            return Random.Next();
         }
     }
 }
