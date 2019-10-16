@@ -18,9 +18,13 @@ namespace FakerTest
         }
 
         [Test]
-        public void Deadlock()
+        public void Recursive()
         {
-            Assert.Throws<ArgumentException>(() => faker.Create<Foo>());
+            Foo foo = faker.Create<Foo>();
+            Assert.NotNull(foo);
+            Assert.NotNull(foo.InFoo);
+            Assert.Null(foo.InFoo.Foo);
+            Assert.AreNotEqual(foo.i, default);
         }
 
         [Test]

@@ -49,37 +49,31 @@ namespace Faker
             }
             if (!_currentDependencies.Add(type))
             {
-                //return null;
-                Console.WriteLine(type);
-                throw new ArgumentException("Deadlock has occured");
+                return default;
             }
             T currentObject;
-            try
+            if (Generators.TryGetValue(MakeTypeFullName(type), out Type generatorType))
             {
-                currentObject = CreateWithGenerator<T>(Generators[MakeTypeFullName(type)]);
+                currentObject = CreateWithGenerator<T>(generatorType);
             }
-            catch (KeyNotFoundException)
-            {
-                if (type.IsEnum)
-                {
-                    currentObject = CreateEnum<T>();
-                }
-                else if (type.IsPrimitive)
-                {
-                    currentObject = (T) Activator.CreateInstance(type);
-                }
-                else if (type.IsValueType)
-                {
-                    currentObject = CreateStruct<T>();
-                }
-                else
-                {
-                    currentObject = CreateObject<T>();
-                }
+            else if (type.IsEnum)
+            { 
+                currentObject = CreateEnum<T>();
             }
-
+            else if (type.IsPrimitive) 
+            { 
+                currentObject = (T) Activator.CreateInstance(type);
+            }
+            else if (type.IsValueType) 
+            { 
+                currentObject = CreateStruct<T>();
+            }
+            else 
+            { 
+                currentObject = CreateObject<T>();
+            }
             _currentDependencies.Remove(type);
-            return (T) currentObject;
+            return currentObject;
         }
 
         private void FillObject(object o)
@@ -90,8 +84,10 @@ namespace Faker
             foreach (var field in fields)
             {
                 field.SetValue(o, Config.Generators.ContainsKey(field)
-                    ? GetType().GetMethod("CreateWithGenerator").MakeGenericMethod(field.FieldType).Invoke(this, new object [] {Config.Generators[field]})
-                    : GetType().GetMethod("Create").MakeGenericMethod(field.FieldType).Invoke(this, new object [0]));
+                    ? GetType().GetMethod("CreateWithGenerator", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .MakeGenericMethod(field.FieldType).Invoke(this, new object [] {Config.Generators[field]})
+                    : GetType().GetMethod("Create")
+                        .MakeGenericMethod(field.FieldType).Invoke(this, new object [0]));
             }
         }
         
@@ -119,7 +115,6 @@ namespace Faker
         {
             Type type = typeof(T);
             T currentObject;
-            //TODO do for the genericks, because GetConstructors() doesn't return genericks constructors
             ConstructorInfo constructorWithMaxParams = GetConstructorWithMaxParams(type);
             if (constructorWithMaxParams != null)
             {

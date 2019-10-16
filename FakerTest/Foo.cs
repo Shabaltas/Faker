@@ -2,6 +2,7 @@
 {
     public class Foo
     {
-        private InFoo InFoo;
+        public int i;
+        public InFoo InFoo { get; set; }
     }
 }
